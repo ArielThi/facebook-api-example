@@ -3,66 +3,66 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login API de Facebook</title>
+    <title>Iniciar sesión con Facebook</title>
 </head>
 <body>
-    <div id="content">
-        <h1>Login API de Facebook</h1>
-        <div id="fb-root"></div>
-        <div class="fb-login-button" data-width="" data-size="large" data-button-type="continue_with" data-layout="default" data-use-continue-as="true"></div>
-        <div id="profile"></div>
-    </div>
+    <h1>Inicia sesión con Facebook</h1>
+    
+    <!-- Botón de Login -->
+    <button onclick="facebookLogin()">Iniciar sesión con Facebook</button>
 
+    <div id="status"></div>
     <script>
+        // Cargar el SDK de Facebook JavaScript
         window.fbAsyncInit = function() {
             FB.init({
-                appId      : '1829429337878297', // ID de la app
+                appId      : '1829429337878297', 
                 cookie     : true,
                 xfbml      : true,
-                version    : 'v18.0'
+                version    : 'v14.0'
             });
-            
-            FB.AppEvents.logPageView();   
 
+            // Verificar el estado del inicio de sesión
             FB.getLoginStatus(function(response) {
                 statusChangeCallback(response);
             });
         };
 
-        (function(d, s, id){
+        // Cargar el SDK de Facebook de manera asíncrona
+        (function(d, s, id) {
             var js, fjs = d.getElementsByTagName(s)[0];
-            if (d.getElementById(id)) {return;}
+            if (d.getElementById(id)) return;
             js = d.createElement(s); js.id = id;
-            js.src = "https://connect.facebook.net/es_ES/sdk.js";
+            js.src = "https://connect.facebook.net/en_US/sdk.js";
             fjs.parentNode.insertBefore(js, fjs);
         }(document, 'script', 'facebook-jssdk'));
 
-        function statusChangeCallback(response) {
-            if (response.status === 'connected') {
-                console.log('Logged in and authenticated');
-                testAPI();
-            } else {
-                console.log('Not authenticated');
-            }
-        }
-
-        function testAPI() {
-            FB.api('/me?fields=name,email', function(response) {
-                if (response && !response.error) {
-                    buildProfile(response);
+        // Función para manejar el inicio de sesión
+        function facebookLogin() {
+            FB.login(function(response) {
+                if (response.authResponse) {
+                    // El usuario ha iniciado sesión con éxito
+                    console.log('Usuario conectado');
+                    FB.api('/me', { fields: 'id,name,email' }, function(response) {
+                        // Mostrar los datos del usuario
+                        document.getElementById('status').innerHTML = 'Bienvenido, ' + response.name + '!';
+                        console.log('Datos del usuario: ', response);
+                    });
+                } else {
+                    // El usuario canceló el login
+                    document.getElementById('status').innerHTML = 'El usuario canceló el login o no concedió permisos.';
                 }
-            });
+            }, {scope: 'public_profile,email'});  // Pedir permisos de perfil y correo
         }
 
-        function buildProfile(user) {
-            let profile = `
-                <h3>Bienvenido ${user.name}</h3>
-                <ul>
-                    <li>User ID: ${user.id}</li>
-                    <li>Email: ${user.email}</li>
-                </ul>
-            `;
-            document.getElementById('profile').innerHTML = profile;
+        // Callback para manejar el estado del login
+        function statusChangeCallback(response) {
+            console.log('Estado de la respuesta:', response);
+            if (response.status === 'connected') {
+                console.log('Usuario está conectado');
+            } else {
+                console.log('Usuario no está conectado');
+            }
         }
     </script>
 </body>
