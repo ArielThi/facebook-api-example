@@ -4,6 +4,36 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Iniciar sesión con Facebook</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+            text-align: center;
+        }
+        button {
+            background-color: #1877F2;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+        #status, #user-info {
+            margin-top: 20px;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        #profile-picture {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            margin: 10px auto;
+        }
+    </style>
 </head>
 <body>
     <h1>Inicia sesión con Facebook</h1>
@@ -12,6 +42,8 @@
     <button onclick="facebookLogin()">Iniciar sesión con Facebook</button>
 
     <div id="status"></div>
+    <div id="user-info"></div>
+
     <script>
         // Cargar el SDK de Facebook JavaScript
         window.fbAsyncInit = function() {
@@ -43,11 +75,7 @@
                 if (response.authResponse) {
                     // El usuario ha iniciado sesión con éxito
                     console.log('Usuario conectado');
-                    FB.api('/me', { fields: 'id,name,email' }, function(response) {
-                        // Mostrar los datos del usuario
-                        document.getElementById('status').innerHTML = 'Bienvenido, ' + response.name + '!';
-                        console.log('Datos del usuario: ', response);
-                    });
+                    fetchUserInfo();
                 } else {
                     // El usuario canceló el login
                     document.getElementById('status').innerHTML = 'El usuario canceló el login o no concedió permisos.';
@@ -60,9 +88,29 @@
             console.log('Estado de la respuesta:', response);
             if (response.status === 'connected') {
                 console.log('Usuario está conectado');
+                fetchUserInfo();
             } else {
                 console.log('Usuario no está conectado');
+                document.getElementById('status').innerHTML = 'Por favor, inicia sesión.';
             }
+        }
+
+        // Función para obtener y mostrar la información del usuario
+        function fetchUserInfo() {
+            FB.api('/me', { fields: 'id,name,email,picture.type(large)' }, function(response) {
+                // Mostrar los datos del usuario
+                document.getElementById('status').innerHTML = '¡Bienvenido, ' + response.name + '!';
+                
+                var userInfoHtml = `
+                    <img id="profile-picture" src="${response.picture.data.url}" alt="Foto de perfil">
+                    <p><strong>Nombre:</strong> ${response.name}</p>
+                    <p><strong>Email:</strong> ${response.email || 'No disponible'}</p>
+                    <p><strong>ID de Facebook:</strong> ${response.id}</p>
+                `;
+                document.getElementById('user-info').innerHTML = userInfoHtml;
+                
+                console.log('Datos del usuario: ', response);
+            });
         }
     </script>
 </body>
