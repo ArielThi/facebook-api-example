@@ -24,38 +24,20 @@
         #profile {
             margin-top: 20px;
         }
-        #logoutBtn {
-            margin-top: 10px;
-            padding: 10px 15px;
-            background-color: #4267B2;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            display: none;
-        }
     </style>
 </head>
 <body>
     <div id="content">
         <h1>Ejemplo de API de Facebook</h1>
         <div id="fb-root"></div>
-        <div class="fb-login-button" 
-            data-width="" 
-            data-size="large" 
-            data-button-type="continue_with" 
-            data-layout="default" 
-            data-auto-logout-link="true" 
-            data-use-continue-as="true">
-        </div>
+        <div class="fb-login-button" data-width="" data-size="large" data-button-type="continue_with" data-layout="default" data-use-continue-as="true"></div>
         <div id="profile"></div>
-        <button id="logoutBtn" onclick="logout()">Cerrar sesión</button>
     </div>
 
     <script>
         window.fbAsyncInit = function() {
             FB.init({
-                appId      : '1829429337878297', // Reemplaza con tu App ID
+                appId      : '1829429337878297', // ID de la app
                 cookie     : true,
                 xfbml      : true,
                 version    : 'v18.0'
@@ -79,11 +61,9 @@
         function statusChangeCallback(response) {
             if (response.status === 'connected') {
                 console.log('Logged in and authenticated');
-                setElements(true);
                 testAPI();
             } else {
                 console.log('Not authenticated');
-                setElements(false);
             }
         }
 
@@ -104,26 +84,6 @@
                 </ul>
             `;
             document.getElementById('profile').innerHTML = profile;
-        }
-
-        function setElements(isLoggedIn) {
-            if (isLoggedIn) {
-                document.getElementById('profile').style.display = 'block';
-                document.getElementById('logoutBtn').style.display = 'block';
-            } else {
-                document.getElementById('profile').style.display = 'none';
-                document.getElementById('logoutBtn').style.display = 'none';
-            }
-        }
-
-        function logout() {
-            FB.logout(function(response) {
-                console.log('Usuario desconectado');
-                setElements(false);
-                document.getElementById('profile').innerHTML = "";
-                // Recargar la página para reiniciar el botón de inicio de sesión de Facebook
-                window.location.reload();
-            });
         }
     </script>
 </body>
