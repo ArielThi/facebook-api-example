@@ -121,6 +121,8 @@
                 console.log('Usuario desconectado');
                 setElements(false);
                 document.getElementById('profile').innerHTML = "";
+                // Recargar la página para reiniciar el botón de inicio de sesión de Facebook
+                window.location.reload();
             });
         }
     </script>
